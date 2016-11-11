@@ -247,7 +247,7 @@ open class MKRingProgressLayer: CALayer {
         
         
         ctx.setLineWidth(w)
-        ctx.setLineCap(.round)
+        ctx.setLineCap(.butt)
         
         
         // Draw backdrop circle
@@ -286,9 +286,12 @@ open class MKRingProgressLayer: CALayer {
         let shadowOffset = CGSize(width: w/10 * cos(angle + angleOffset), height: w/10 * sin(angle + angleOffset))
         ctx.setShadow(offset: shadowOffset, blur: w/3, color: UIColor(white: 0.0, alpha: endShadowOpacity).cgColor)
         let arcEnd = CGPoint(x: c.x + r * cos(angle1), y: c.y + r * sin(angle1))
-        let shadowPath = UIBezierPath(ovalIn: CGRect(x: arcEnd.x - w/2, y: arcEnd.y - w/2, width: w, height: w))
+        let shadowPath = UIBezierPath(rect: CGRect(x: arcEnd.x - w/2, y: arcEnd.y - 2, width: w, height: 2))
+        shadowPath.apply(CGAffineTransform(translationX: -arcEnd.x, y: -arcEnd.y))
+        shadowPath.apply(CGAffineTransform(rotationAngle: angle1))
+        shadowPath.apply(CGAffineTransform(translationX: arcEnd.x, y: arcEnd.y))
         ctx.addPath(shadowPath.cgPath)
-        ctx.setFillColor(startColor)
+        ctx.setFillColor(endColor)
         ctx.fillPath()
         
         ctx.restoreGState()
@@ -298,7 +301,7 @@ open class MKRingProgressLayer: CALayer {
         
         ctx.saveGState()
         
-        ctx.addPath(CGPath(__byStroking: arc1Path.cgPath, transform: nil, lineWidth: w, lineCap: .round, lineJoin: .round, miterLimit: 0)!)
+        ctx.addPath(CGPath(__byStroking: arc1Path.cgPath, transform: nil, lineWidth: w, lineCap: .butt, lineJoin: .miter, miterLimit: 0)!)
         ctx.clip()
         
         ctx.draw(gradientImage(), in: circleRect.insetBy(dx: -w/2, dy: -w/2))
